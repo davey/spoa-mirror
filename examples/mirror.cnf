@@ -1,0 +1,15 @@
+[mirror]
+spoe-agent mirror
+  log global
+  groups mirror
+  messages mirror
+  use-backend mirroragents
+  timeout hello 500ms
+  timeout idle 5s
+  timeout processing 5s
+
+spoe-group mirror
+  messages mirror
+
+spoe-message mirror
+  args arg_method=method arg_path=url arg_hdrs=req.hdrs arg_body=req.body
