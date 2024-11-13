@@ -101,7 +101,23 @@ func handler(req *request.Request) {
 		return
 	}
 
-	go makeHTTPRequest(method.(string), path.(string), hdrs.(string), body.([]byte))
+	methodString := method.(string)
+	pathString := path.(string)
+	bodyBytes := body.([]byte)
+
+	var hdrsString string
+	switch v := hdrs.(type) {
+	case []uint8:
+		log.Printf("Invalid header format. In mirror.cnf make sure to use arg_hdrs=req.hdrs instead of arg_hdrs=req.hdrs_bin")
+		return
+	case string:
+		hdrsString = v // Already a string
+	default:
+		log.Printf("Unable to decode headers.")
+		return
+	}
+
+	go makeHTTPRequest(methodString, pathString, hdrsString, bodyBytes)
 }
 
 func makeHTTPRequest(reqMethod string, reqPath string, reqHeaders string, reqBody []byte) {
