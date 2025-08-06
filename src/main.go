@@ -21,8 +21,10 @@ import (
 var httpClient = &http.Client{
 	Timeout: 1 * time.Second, // Set the timeout to 1 second
 }
+var listenAddr string
 var mirrorhost string
 var debug bool
+var verbose bool
 
 func main() {
 
@@ -30,13 +32,15 @@ func main() {
 	listenAddrParam := flag.String("listen", "127.0.0.1:12345", "Address where the server should listen")
 	mirrorhostParam := flag.String("host", "", "Hostname where requests should be mirrored to (no trailing slash)")
 	debugParam := flag.Bool("debug", false, "Enable debug mode")
+	verboseParam := flag.Bool("verbose", false, "Enable verbose mode")
 
 	// Parse the command line flags
 	flag.Parse()
 
-	listenAddr := *listenAddrParam
+	listenAddr = *listenAddrParam
 	mirrorhost = *mirrorhostParam
 	debug = *debugParam
+	verbose = *verboseParam
 
 	// Validate the mirrorHost
 	if mirrorhost == "" {
@@ -104,7 +108,11 @@ func handler(req *request.Request) {
 	methodString := method.(string)
 	pathString := path.(string)
 	bodyBytes := body.([]byte)
-
+	
+	if debug {
+		log.Printf("SPOA-MIRROR %s %s - %s %s - %s\n", methodString, pathString, mirrorhost, listenAddr, string(bodyBytes))
+	}
+	
 	var hdrsString string
 	switch v := hdrs.(type) {
 	case []uint8:
