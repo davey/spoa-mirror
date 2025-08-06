@@ -109,7 +109,7 @@ func handler(req *request.Request) {
 	pathString := path.(string)
 	bodyBytes := body.([]byte)
 	
-	if debug {
+	if verbose {
 		log.Printf("SPOA-MIRROR %s %s - %s %s - %s\n", methodString, pathString, mirrorhost, listenAddr, string(bodyBytes))
 	}
 	
