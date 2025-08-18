@@ -77,7 +77,8 @@ func handler(req *request.Request) {
 
 	mes, err := req.Messages.GetByName(messageName)
 	if err != nil {
-		log.Printf("message %s not found: %v", messageName, err)
+		// do nothing if there's no "mirror" message in this event/request
+		// log.Printf("message %s not found: %v", messageName, err)
 		return
 	}
 
@@ -108,11 +109,11 @@ func handler(req *request.Request) {
 	methodString := method.(string)
 	pathString := path.(string)
 	bodyBytes := body.([]byte)
-	
+
 	if verbose {
 		log.Printf("SPOA-MIRROR %s %s - %s %s - %s\n", methodString, pathString, mirrorhost, listenAddr, string(bodyBytes))
 	}
-	
+
 	var hdrsString string
 	switch v := hdrs.(type) {
 	case []uint8:
@@ -159,7 +160,12 @@ func makeHTTPRequest(reqMethod string, reqPath string, reqHeaders string, reqBod
 
 	// Make the HTTP request
 	resp, err := httpClient.Do(req)
-	if err != nil {
+	if err == nil {
+		if verbose {
+			log.Printf("SPOA-MIRROR HTTP request:  %v\n", req)
+			log.Printf("SPOA-MIRROR HTTP response: %v\n", resp)
+		}
+	} else {
 		log.Printf("Error making HTTP request: %v\n", err)
 		return
 	}
